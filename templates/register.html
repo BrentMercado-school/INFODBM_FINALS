@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Register Page</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>CREATE AN ACCOUNT</h1>
+    <p id="error_message"></p>
+
+    <div class="form">
+        <input type="text" id="username" placeholder="Enter username">
+        <input type="password" id="password" placeholder="Enter password">
+        <button onclick="registerUser()">CREATE</button>
+    </div>
+
+    <h1>Login Account</h1>
+    <div class="form">
+        <input type="text" id="username_login" placeholder="Enter username">
+        <input type="password" id="password_login" placeholder="Enter password">
+        <p id="error_message_login"></p>
+        <button onclick="loginUser()">LOGIN</button>
+    </div>
+</body>
+<script src="/static/register.js"></script>
+</html>

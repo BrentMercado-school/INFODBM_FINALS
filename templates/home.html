@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<h1>HOME PAGE</h1>
+<button onclick="logout()">Logout</button>
+<button onclick="openAddItemModal()">+Add Item</button>
+<h1>Community Shared Items</h1>
+<p id="general_message"></p>
+
+<table id="community_items_table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>ItemName</th>
+            <th>Category</th>
+            <th>Condition</th>
+            <th>Owner</th>
+            <th>SecurityDeposit</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<p id="table_message"></p>
+
+
+<div class="form" id="add_item_modal" style="display: none">
+    <input type="text" id="item_name" placeholder="Enter item name">
+
+    <select id="category">
+            <option value="">Select a category</option>
+    </select>
+
+    <input type="text" id="condition" placeholder="Enter item condition">
+    <input type="text" id="description" placeholder="Enter item description">
+    <input type="text" id="note" placeholder="Note to borrower">
+    <input type="number" id="security_deposit" placeholder="Enter security deposit">
+
+    <input type="file" id="image" accept="image/*">
+
+    <p id="add_item_message"></p>
+    <button onclick="addItem()">Add</button>
+    <button onclick="cancelAdd()">Cancel</button>
+</div>
+
+</body>
+<script src="/static/home.js"></script>
+</html>
