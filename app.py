@@ -192,5 +192,12 @@ def load_community_items():
         return jsonify({"error": "Something went wrong."}), 500
     finally:
         conn.close()
+
+@app.route("/api/myitems")
+def open_my_items_page():
+    if session.get("user_id") is None:
+        return jsonify({"error": "You need to login first."}), 401
+    return render_template("my_items.html")
+
 if __name__ == '__main__':
    app.run(debug=True)
