@@ -33,6 +33,24 @@
 </table>
 <p id="table_message"></p>
 
+<h1>Latest Items</h1>
+<table id="community_latest_items_table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>ItemName</th>
+            <th>Category</th>
+            <th>Condition</th>
+            <th>Owner</th>
+            <th>SecurityDeposit</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<p id="community_latest_items_table_message"></p>
+
 
 <div class="form" id="add_item_modal" style="display: none">
     <input type="text" id="item_name" placeholder="Enter item name">
@@ -51,6 +69,54 @@
     <p id="add_item_message"></p>
     <button onclick="addItem()">Add</button>
     <button onclick="cancelAdd()">Cancel</button>
+</div>
+
+<div class="form" id="view_item_modal" style="display: none">
+    <h1>Item Details</h1>
+    <input type="hidden" id="item_id">
+    <img id="item_image_borrow" alt="No image" style="width:150px;height:120px;object-fit:cover;">
+
+    <hr>
+
+    <label>Item Name</label>
+    <input type="text" id="item_name_borrow" readonly>
+
+    <label>Item Category</label>
+    <input type="text" id="item_name_category" readonly>
+
+    <label>Item Condition</label>
+    <input type="text" id="item_name_condition" readonly>
+
+    <label>Owner</label>
+    <input type="text" id="item_owner" readonly>
+
+    <label>Note</label>
+    <input type="text" id="item_note_borrow" readonly>
+
+    <label>Security Deposit</label>
+    <input type="text" id="item_security_deposit" readonly>
+
+    <label>Status</label>
+    <input type="text" id="item_security_status" readonly>
+
+    <div id="view_details_buttons">
+        <button onclick="openBorrowDetailsModal()">Borrow</button>
+        <button onclick="closeViewItemDetailsModal()">Close</button>
+    </div>
+
+    <div id="borrow_details_modal" style="display: none">
+        <h1>Borrow Details</h1>
+        <label>Start Date</label>
+        <input type="date" id="start_date">
+
+        <label>Return Date</label>
+        <input type="date" id="return_date">
+
+        <button onclick="borrowItem()">Borrow</button>
+        <button onclick="closeViewItemDetailsModal()">Cancel</button>
+    </div>
+
+    <p id="borrow_message"></p>
 </div>
 
 </body>

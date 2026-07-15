@@ -193,11 +193,109 @@ def load_community_items():
     finally:
         conn.close()
 
+@app.route("/api/items/latest_items", methods=["GET"])
+def load_latest_items():
+    if session.get("user_id") is None:
+        return jsonify({"error": "You need to login first."}), 401
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    items = []
+
+    try:
+        cursor.execute("EXEC uspGetLatestItems @user_id = ?", session["user_id"])
+        rows = cursor.fetchall()
+
+        for row in rows:
+            items.append({
+                "id": row[0],
+                "image": row[1],
+                "name": row[2],
+                "category": row[3],
+                "condition": row[4],
+                "owner": row[5],
+                "security_deposit": row[6],
+                "status": row[7],
+            })
+        return jsonify(items)
+    except Exception as e:
+        print("LOAD LATEST ITEMS ERROR:", e)
+        return jsonify({"error": "Something went wrong."}), 500
+    finally:
+        conn.close()
+
 @app.route("/api/myitems")
 def open_my_items_page():
     if session.get("user_id") is None:
         return jsonify({"error": "You need to login first."}), 401
     return render_template("my_items.html")
+
+@app.route("/api/items/<int:id>", methods=["GET"])
+def get_item_by_id(id):
+    if session.get("user_id") is None:
+        return jsonify({"error": "You need to login first."}), 401
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("EXEC uspGetItemByID @item_id = ?", id)
+        item = cursor.fetchone()
+
+        if item is None:
+            return jsonify({"error": "Item not found"}), 404
+
+        return jsonify({
+            "id": item[0],
+            "name": item[1],
+            "category": item[2],
+            "condition": item[3],
+            "owner": item[4],
+            "image": item[5],
+            "security_deposit": item[6],
+            "status": item[7],
+            "note": item[8],
+        })
+    except Exception as e:
+        print("GET ITEM ERROR:", e)
+        return jsonify({"error": "Something went wrong."}), 500
+    finally:
+        conn.close()
+
+@app.route("/api/borrowItem/<int:item_id>", methods=["POST"])
+def borrow_item(item_id):
+    if session.get("user_id") is None:
+        return jsonify({"error": "You need to login first."}), 401
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    data = request.get_json()
+
+    messages = {
+        "NOT_FOUND": ("Item not found.", 404),
+        "OWN_ITEM": ("You cannot borrow your own item.", 400),
+        "NOT_AVAILABLE": ("This item is not available for borrowing.", 400),
+        "START_IN_PAST": ("Start date cannot be in the past.", 400),
+        "INVALID_DATES": ("Return date must be on or after the start date.", 400),
+    }
+
+    try:
+        cursor.execute(
+            "EXEC uspBorrowItem @borrower_id = ?, @item_id = ?, @start = ?, @return = ?",
+            session["user_id"], item_id, data["startDate"], data["returnDate"])
+
+        result = cursor.fetchone()[0]
+        if result != "SUCCESS":
+            text, code = messages.get(result, ("Something went wrong.", 400))
+            return jsonify({"error": text}), code
+
+        conn.commit()
+        return jsonify({"message": "Borrow request sent."}), 201
+    except Exception as e:
+        conn.rollback()
+        print("BORROW ERROR:", e)
+        return jsonify({"error": "Something went wrong."}), 400
+    finally:
+        conn.close()
 
 if __name__ == '__main__':
    app.run(debug=True)

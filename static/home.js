@@ -121,10 +121,128 @@ async function loadCommunityItems()
                 <td>₱${i.security_deposit}</td>
                 <td>${i.status}</td>
                 <td>
-                    <button onclick="viewItemDetails(${i.id})">VIEW</button>
+                    <button onclick="openViewItemDetailsModal(${i.id})">VIEW</button>
                 </td> 
             </tr>
         `;
     });
 }
+
+async function closeViewItemDetailsModal()
+{
+    document.getElementById("view_item_modal").style.display = "none"
+}
+
+async function openViewItemDetailsModal(id)
+{
+
+    const res = await fetch(`/api/items/${id}`);
+    const data = await res.json();
+
+    if (res.ok) {
+        document.getElementById("view_item_modal").style.display = "block"
+
+        if (data["image"]) {
+            document.getElementById("item_image_borrow").src = data["image"];
+            document.getElementById("item_image_borrow").style.display = "";
+        } else {
+            document.getElementById("item_image_borrow").style.display = "none";
+        }
+        document.getElementById("item_id").value = data["id"];
+        document.getElementById("item_name_borrow").value = data["name"];
+        document.getElementById("item_name_category").value = data["category"];
+        document.getElementById("item_name_condition").value = data["condition"];
+        document.getElementById("item_owner").value = data["owner"];
+        document.getElementById("item_image_borrow").value = data["image"];
+        document.getElementById("item_security_deposit").value = data["security_deposit"];
+        document.getElementById("item_security_status").value = data["status"];
+        document.getElementById("item_note_borrow").value = data["note"];
+
+    } else {
+        document.getElementById("general_message").textContent = data.error;
+    }
+
+}
+
+async function openBorrowDetailsModal()
+{
+    const status = document.getElementById("item_security_status").value;
+
+    if (status === 'Borrowed' || status === 'Unavailable') {
+        document.getElementById("borrow_message").textContent = "Item cannot be borrowed";
+        return;
+    } else {
+        document.getElementById("view_details_buttons").style.display = "none"
+        document.getElementById("borrow_details_modal").style.display = "block"
+    }
+}
+
+async function borrowItem()
+{
+    const item_id = document.getElementById("item_id").value;
+    const startDate = document.getElementById("start_date").value;
+    const returnDate = document.getElementById("return_date").value;
+
+    if (!startDate || !returnDate){
+        document.getElementById("borrow_message").textContent = "Please select both dates.";
+        return;
+    }
+    if (returnDate < startDate){
+        document.getElementById("borrow_message").textContent = "Return date must be on or after the start date.";
+        return;
+    }
+
+    const res = await fetch(`/api/borrowItem/${item_id}`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ startDate, returnDate })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+        document.getElementById("general_message").textContent = data.message;
+        closeViewItemDetailsModal()
+        loadCommunityItems();
+        loadLatestItems();
+    } else {
+        document.getElementById("borrow_message").textContent = data.error;
+    }
+}
+
+async function loadLatestItems()
+{
+    const res = await fetch ("/api/items/latest_items");
+    const data = await res.json();
+    const tbody = document.querySelector("#community_latest_items_table tbody");
+    tbody.innerHTML  = "";
+
+    if (!res.ok) {
+        document.getElementById("community_latest_items_table_message").textContent = data.error;
+        return;
+    }
+
+    if (data.length === 0) {
+        document.getElementById("community_latest_items_table_message").textContent = "No community items found.";
+        return;
+    }
+
+    data.forEach(i => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${i.image ? `<img src="${i.image}" alt="" style="width:48px;height:48px;object-fit:cover;">`: "No image"}</td>
+                <td>${i.name}</td>
+                <td>${i.category}</td>
+                <td>${i.condition}</td>
+                <td>${i.owner}</td>
+                <td>₱${i.security_deposit}</td>
+                <td>${i.status}</td>
+                <td>
+                    <button onclick="openViewItemDetailsModal(${i.id})">VIEW</button>
+                </td> 
+            </tr>
+        `;
+    });
+}
+loadLatestItems()
 loadCommunityItems()
