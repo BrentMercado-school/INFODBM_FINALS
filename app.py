@@ -19,6 +19,7 @@ app.secret_key = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a
 def open_register_page():
     return render_template("register.html")
 
+
 @app.route("/api/auth/register", methods=["POST"])
 def register_user():
     conn = get_connection()
@@ -716,8 +717,12 @@ def update_profile():
     data = request.form
     image = request.files.get("image")
 
+    username = (data.get("username") or "").strip()
+    if not username:
+        conn.close()
+        return jsonify({"error": "Username cannot be empty."}), 400
+
     try:
-        # handle the image the same way as add-item
         image_url = None
         if image and image.filename and allowed_file(image.filename):
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -727,9 +732,17 @@ def update_profile():
 
         cursor.execute(
             "EXEC uspUpdateUser @user_id = ?, @username = ?, @address = ?, @contact = ?, @image = ?",
-            session["user_id"], data["username"], data["address"], data["contact"], image_url
+            session["user_id"], username, data.get("address"), data.get("contact"), image_url
         )
+
+        result = cursor.fetchone()[0]
+
+        if result == "USERNAME_TAKEN":
+            conn.close()
+            return jsonify({"error": "Username already taken."}), 400
+
         conn.commit()
+        session["username"] = username
         return jsonify({"message": "Profile updated successfully."}), 200
 
     except Exception as e:
@@ -1119,6 +1132,7 @@ def get_return_details(borrow_form_id):
             "item_condition": row[6],
             "start_date": row[7].strftime("%B %d, %Y") if row[7] else "",
             "expected_return": row[8].strftime("%B %d, %Y") if row[8] else "",
+            "expected_return_raw": row[8].strftime("%Y-%m-%d") if row[8] else "",
             "security_deposit": float(row[9] or 0),
         })
     except Exception as e:
@@ -1127,6 +1141,43 @@ def get_return_details(borrow_form_id):
     finally:
         conn.close()
 
+@app.route("/api/return_item/<int:borrow_form_id>", methods=["PUT"])
+def return_item(borrow_form_id):
+    if session.get("user_id") is None:
+        return jsonify({"error": "You need to login first."}), 401
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    data = request.get_json()
+
+    messages = {
+        "NOT_FOUND": ("Borrow record not found.", 404),
+        "NOT_OWNER": ("You are not the owner of this item.", 403),
+        "NOT_ACTIVE": ("This item is not currently borrowed.", 400),
+        "INVALID_DAMAGE": ("Damage fee cannot be negative.", 400),
+    }
+
+    try:
+        cursor.execute(
+            "EXEC uspReturnItem @user_id = ?, @borrow_form = ?, @actual_return = ?, @damage_fee = ?",
+            session["user_id"], borrow_form_id,
+            data["actual_return_date"], data["damage_fee"] or 0
+        )
+        result = cursor.fetchone()[0]
+
+        if result != "SUCCESS":
+            text, code = messages.get(result, ("Something went wrong.", 400))
+            return jsonify({"error": text}), code
+
+        conn.commit()
+        return jsonify({"message": "Item returned successfully."}), 200
+
+    except Exception as e:
+        conn.rollback()
+        print("RETURN ITEM ERROR:", e)
+        return jsonify({"error": "Something went wrong."}), 400
+    finally:
+        conn.close()
 
 if __name__ == '__main__':
   app.run(debug=True)

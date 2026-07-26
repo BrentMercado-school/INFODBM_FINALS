@@ -7,14 +7,11 @@ async function loadProfile() {
         return;
     }
 
-    // Username
     document.getElementById("display_username").textContent = data.username;
 
-    // Address & contact (show a dash if empty)
     document.getElementById("display_address").textContent = data.address || "Not set";
     document.getElementById("display_contact").textContent = data.contact || "Not set";
 
-    // Avatar image
     if (data.image) {
         const img = document.getElementById("profile_image");
         img.src = data.image;
@@ -22,6 +19,7 @@ async function loadProfile() {
         document.getElementById("profile_placeholder").style.display = "none";
     }
 }
+
 function openEditProfileModal() {
     document.getElementById("edit_username").value =
         document.getElementById("display_username").textContent;
@@ -29,7 +27,6 @@ function openEditProfileModal() {
     const address = document.getElementById("display_address").textContent;
     const contact = document.getElementById("display_contact").textContent;
 
-    // clear the "Not set" placeholder text so they don't edit that literally
     document.getElementById("edit_address").value = address === "Not set" ? "" : address;
     document.getElementById("edit_contact").value = contact === "Not set" ? "" : contact;
 
@@ -41,7 +38,6 @@ function closeEditProfileModal() {
     document.getElementById("edit_profile_modal").style.display = "none";
 }
 
-// Save the edited profile
 async function saveProfile() {
     const username = document.getElementById("edit_username").value;
     const address = document.getElementById("edit_address").value;
@@ -62,7 +58,7 @@ async function saveProfile() {
     }
 
     const res = await fetch("/api/profile/update", {
-        method: "PUT",          // POST for file uploads (like add-item)
+        method: "PUT",
         body: formData
     });
 
@@ -72,7 +68,7 @@ async function saveProfile() {
         closeEditProfileModal();
         document.getElementById("edit_image").value = "";
         document.getElementById("general_message").textContent = data.message;
-        loadProfile();   // refresh displayed info + avatar
+        loadProfile();
     } else {
         document.getElementById("edit_message").textContent = data.error;
     }
@@ -95,6 +91,5 @@ async function loadStats() {
     document.getElementById("stat_completed").textContent = data.borrows_completed;
 }
 
-// call it alongside loadProfile
 loadProfile();
 loadStats();

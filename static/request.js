@@ -49,7 +49,6 @@ async function loadAllBorrowRequest() {
                 <div class="request-actions">
                     <button class="btn-accept" onclick="acceptBorrowRequest(${d.borrow_form_id}, ${d.item_id})">Accept</button>
                     <button class="btn-decline" onclick="openDeclineRequestModal(${d.borrow_form_id})">Decline</button>
-                    <button class="btn-details">Details</button>
                 </div>
             </div>
         `;
@@ -104,8 +103,8 @@ async function loadMyBorrowRequest() {
                     <p class="request-category">${d.category}</p>
 
                     <div class="request-dates">
-                        <p><span class="date-label">Start Date: ${d.start_date}</p>
-                        <p><span class="date-label">Return Date: ${d.return_date}</p>
+                        <p><span class="date-label">Start Date:</span> ${d.start_date}</p>
+                        <p><span class="date-label">Return Date:</span> ${d.return_date}</p>
                     </div>
 
                     <p class="request-deposit">Deposit: ₱${d.security_deposit}</p>
@@ -174,6 +173,7 @@ async function declineBorrowRequest()
         document.getElementById("general_message").textContent = data.error;
     }
 }
+
 function setActiveRequestChip(label) {
     document.querySelectorAll(".filter-chips .chip").forEach(chip => {
         if (chip.textContent.trim() === label) {
@@ -183,6 +183,7 @@ function setActiveRequestChip(label) {
         }
     });
 }
+
 async function logout() {
     const res = await fetch("/api/logout", { method: "POST" });
     if (res.ok) window.location.href = "/";
@@ -231,7 +232,6 @@ async function loadOngoingBorrowRequest() {
             ? `<img src="${d.image}" alt="${d.name}">`
             : `<div class="req-noimage">No image</div>`;
 
-        // color the status pill by the function's result
         let statusClass = "status-ontrack";
         if (d.status === "Due Today") statusClass = "status-duetoday";
         else if (d.status === "Overdue") statusClass = "status-overdue";

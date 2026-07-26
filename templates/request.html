@@ -9,7 +9,6 @@
 <body>
 <div class="layout">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <h2>ShareNest</h2>
@@ -46,18 +45,8 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main">
 
-        <!-- Top bar: search -->
-        <div class="topbar">
-            <input type="search" class="search-input" placeholder="Search requests..." id="search_item">
-            <button class="btn-primary" onclick="loadSearchCommunityItems()">
-                <i data-lucide="search"></i> Search
-            </button>
-        </div>
-
-        <!-- Filter chips -->
         <div class="filter-chips">
             <button class="chip active" onclick="loadAllBorrowRequest()">All</button>
             <button class="chip" onclick="loadMyBorrowRequest()">My Borrow Request</button>
@@ -76,7 +65,6 @@
     </main>
 </div>
 
-<!-- Decline modal -->
 <div class="modal-overlay" id="decline_modal" style="display:none">
     <div class="modal-card">
         <h2>Decline Request</h2>
@@ -90,7 +78,6 @@
     </div>
 </div>
 
-<!-- Lucide icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons();</script>
 <script src="/static/request.js"></script>

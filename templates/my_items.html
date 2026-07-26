@@ -9,7 +9,6 @@
 <body>
 <div class="layout">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <h2>ShareNest</h2>
@@ -46,10 +45,8 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main">
 
-        <!-- Top bar: search -->
         <div class="topbar">
             <input type="text" class="search-input" id="item_search" placeholder="Search my items...">
             <button class="btn-primary" onclick="searchItems()">
@@ -58,7 +55,6 @@
             <button class="btn-secondary" onclick="clearSearch()">Clear</button>
         </div>
 
-        <!-- Filter chips (mirrors your select options) -->
         <div class="filter-chips">
             <button class="chip active" data-filter="all" onclick="setFilter('all')">All</button>
             <button class="chip" data-filter="available" onclick="setFilter('available')">Available</button>
@@ -66,7 +62,6 @@
             <button class="chip" data-filter="latest" onclick="setFilter('latest')">Latest</button>
         </div>
 
-        <!-- hidden select keeps your existing JS working -->
         <select id="item_filter" style="display:none">
             <option value="all">All</option>
             <option value="available">Available</option>
@@ -85,7 +80,7 @@
     </main>
 </div>
 
-<!-- Edit Item modal -->
+
 <div class="modal-overlay" id="edit_item_modal" style="display:none">
     <div class="modal-card">
         <h2>Edit Item</h2>
@@ -122,18 +117,15 @@
     </div>
 </div>
 
-<!-- Return modal -->
 <div class="modal-overlay" id="return_modal" style="display:none">
     <div class="modal-card return-card">
 
-        <!-- Borrower -->
         <h3 class="return-heading">Borrower Details</h3>
         <div class="return-panel">
             <div class="return-borrower-top">
                 <img id="borrower_image" class="return-avatar" alt="Borrower">
                 <div>
                     <p class="return-borrower-name" id="borrower_name"></p>
-                    <p class="return-borrower-sub" id="borrower_email"></p>
                 </div>
             </div>
             <div class="return-address">
@@ -142,7 +134,6 @@
             </div>
         </div>
 
-        <!-- Item -->
         <h3 class="return-heading">Item Details</h3>
         <div class="return-panel return-item-panel">
             <img id="return_item_image" class="return-item-img" alt="Item">
@@ -157,7 +148,6 @@
             </div>
         </div>
 
-        <!-- Read-only date/fee grid -->
         <div class="return-grid">
             <div>
                 <label>Start Date</label>
@@ -177,7 +167,6 @@
             </div>
         </div>
 
-        <!-- Editable inputs -->
         <div class="return-grid">
             <div>
                 <label>Actual Return Date</label>
@@ -191,14 +180,43 @@
 
         <p id="return_modal_message" class="message"></p>
 
-        <div class="modal-buttons">
-            <button class="btn-primary" onclick="submitReturn()">Confirm Return</button>
+        <div class="modal-buttons" id="return_step1_buttons">
+            <button class="btn-primary" onclick="showReturnReceipt()">Confirm Return</button>
             <button class="btn-secondary" onclick="closeReturnModal()">Cancel</button>
+        </div>
+
+        <div id="return_receipt" style="display:none">
+            <div class="return-total">
+                <div class="return-total-header">
+                    <span>Return Summary</span>
+                    <span>Amount</span>
+                </div>
+                <div class="return-total-row">
+                    <span>Security Deposit</span>
+                    <span id="receipt_deposit">₱0</span>
+                </div>
+                <div class="return-total-row">
+                    <span>Damage Fee</span>
+                    <span class="deduct" id="receipt_damage">-₱0</span>
+                </div>
+                <div class="return-total-row">
+                    <span id="receipt_penalty_label">Late Penalty</span>
+                    <span class="deduct" id="receipt_penalty">-₱0</span>
+                </div>
+                <div class="return-total-final">
+                    <span id="receipt_final_label">Amount to return</span>
+                    <span id="receipt_final">₱0</span>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="submitReturn()">Confirm Return</button>
+                <button class="btn-secondary" onclick="cancelReceipt()">Cancel</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Lucide icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons();</script>
 <script src="/static/my_items.js"></script>
