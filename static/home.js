@@ -1,4 +1,3 @@
-
 async function logout()
 {
     const res  = await  fetch("/api/logout",  {method: 'POST'})
@@ -7,6 +6,7 @@ async function logout()
         window.location.href = "/"
     }
 }
+
 async function addItem()
 {
     const item_name = document.getElementById("item_name").value;
@@ -57,14 +57,15 @@ async function addItem()
 
     }
 }
+
 function openAddItemModal()
 {
-    document.getElementById("add_item_modal").style.display = "block";
+    document.getElementById("add_item_modal").style.display = "flex";
     loadCategories()
 }
+
 function cancelAdd()
 {
-
     document.getElementById("item_name").value = "";
     document.getElementById("category").value = "";
     document.getElementById("condition").value = "";
@@ -75,15 +76,16 @@ function cancelAdd()
 
     document.getElementById("add_item_modal").style.display = "none";
 }
+
 async function loadCategories()
-{
+    {
     const res = await fetch("/api/categories");
     const data = await res.json();
     const select =  document.getElementById("category");
     select.innerHTML = "";
 
     if (res.ok) {
-        select.innerHTML = `<option value="">Select a category</option>>`
+        select.innerHTML = `<option value="">Select a category</option>`;
         data.forEach(c =>  {
             select.innerHTML  += `
             <option value="${c.id}">${c.name}</option>;
@@ -93,54 +95,26 @@ async function loadCategories()
         document.getElementById("general_message").textContent = data.error;
     }
 }
-async function loadCommunityItems()
-{
-    const res = await fetch ("/api/items/community_items");
-    const data = await res.json();
-    const tbody = document.querySelector("#community_items_table tbody");
-    tbody.innerHTML  = "";
-
-    if (!res.ok) {
-        document.getElementById("table_message").textContent = data.error;
-        return;
-    }
-
-    if (data.length === 0) {
-        document.getElementById("table_message").textContent = "No community items found.";
-        return;
-    }
-
-    data.forEach(i => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${i.image ? `<img src="${i.image}" alt="" style="width:48px;height:48px;object-fit:cover;">`: "No image"}</td>
-                <td>${i.name}</td>
-                <td>${i.category}</td>
-                <td>${i.condition}</td>
-                <td>${i.owner}</td>
-                <td>₱${i.security_deposit}</td>
-                <td>${i.status}</td>
-                <td>
-                    <button onclick="openViewItemDetailsModal(${i.id})">VIEW</button>
-                </td> 
-            </tr>
-        `;
-    });
-}
 
 async function closeViewItemDetailsModal()
 {
-    document.getElementById("view_item_modal").style.display = "none"
+    document.getElementById("view_item_modal").style.display = "none";
+    loadCommunityItems();
+    loadLatestItems();
 }
 
 async function openViewItemDetailsModal(id)
 {
-
     const res = await fetch(`/api/items/${id}`);
     const data = await res.json();
 
     if (res.ok) {
-        document.getElementById("view_item_modal").style.display = "block"
+        document.getElementById("view_item_modal").style.display = "flex"
+        document.getElementById("view_details_buttons").style.display = "flex";
+        document.getElementById("borrow_details_modal").style.display = "none";
+        document.getElementById("borrow_message").textContent = "";
+        document.getElementById("start_date").value = "";
+        document.getElementById("return_date").value = "";
 
         if (data["image"]) {
             document.getElementById("item_image_borrow").src = data["image"];
@@ -210,39 +184,95 @@ async function borrowItem()
     }
 }
 
-async function loadLatestItems()
-{
-    const res = await fetch ("/api/items/latest_items");
+function buildItemCard(i) {
+    let statusHTML;
+    if (i.status === "Available") {
+        statusHTML = `
+            <div class="card-status available">
+                <i data-lucide="check-circle"></i>
+                <span>available</span>
+            </div>`;
+    } else {
+        statusHTML = `
+            <div class="card-status borrowed">
+                <i data-lucide="clock"></i>
+                <span>${i.status}</span>
+            </div>`;
+    }
+
+    const imageHTML = i.image
+        ? `<img src="${i.image}" alt="${i.name}">`
+        : `<div class="card-noimage">No image</div>`;
+
+    return `
+        <div class="item-card" onclick="openViewItemDetailsModal(${i.id})">
+            <div class="card-image">${imageHTML}</div>
+            <div class="card-body">
+                <h3 class="card-title">${i.name}</h3>
+                <div class="card-owner">
+                    <span>${i.owner}</span>
+                </div>
+                ${statusHTML}
+            </div>
+        </div>
+    `;
+}
+
+async function loadCommunityItems() {
+    const res = await fetch("/api/items/community_items");
     const data = await res.json();
-    const tbody = document.querySelector("#community_latest_items_table tbody");
-    tbody.innerHTML  = "";
+    const grid = document.getElementById("community_items_grid");
+    grid.innerHTML = "";
+
+    if (!res.ok) {
+        document.getElementById("table_message").textContent = data.error;
+        return;
+    }
+    if (data.length === 0) {
+        document.getElementById("table_message").textContent = "No community items found.";
+        return;
+    }
+
+    data.forEach(i => grid.innerHTML += buildItemCard(i));
+    lucide.createIcons();
+}
+
+async function loadLatestItems() {
+    const res = await fetch("/api/items/latest_items");
+    const data = await res.json();
+    const grid = document.getElementById("community_latest_items_grid");
+    grid.innerHTML = "";
 
     if (!res.ok) {
         document.getElementById("community_latest_items_table_message").textContent = data.error;
         return;
     }
-
     if (data.length === 0) {
         document.getElementById("community_latest_items_table_message").textContent = "No community items found.";
         return;
     }
 
-    data.forEach(i => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${i.image ? `<img src="${i.image}" alt="" style="width:48px;height:48px;object-fit:cover;">`: "No image"}</td>
-                <td>${i.name}</td>
-                <td>${i.category}</td>
-                <td>${i.condition}</td>
-                <td>${i.owner}</td>
-                <td>₱${i.security_deposit}</td>
-                <td>${i.status}</td>
-                <td>
-                    <button onclick="openViewItemDetailsModal(${i.id})">VIEW</button>
-                </td> 
-            </tr>
-        `;
-    });
+    data.forEach(i => grid.innerHTML += buildItemCard(i));
+    lucide.createIcons();
 }
-loadLatestItems()
-loadCommunityItems()
+
+function cancelBorrow() {
+    document.getElementById("borrow_details_modal").style.display = "none";
+    document.getElementById("view_details_buttons").style.display = "flex";
+    document.getElementById("borrow_message").textContent = "";
+    document.getElementById("start_date").value = "";
+    document.getElementById("return_date").value = "";
+}
+
+function goToCommunity(category)
+{
+    window.location.href = `/api/community_items?category=${category}`;
+}
+
+function goToCommunitySearch()
+{
+    window.location.href = `/api/community_items?focus=search`;
+}
+
+loadLatestItems();
+loadCommunityItems();

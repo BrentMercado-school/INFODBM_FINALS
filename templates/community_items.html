@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Community Items</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <div class="layout">
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <h2>ShareNest</h2>
         </div>
 
         <nav class="sidebar-nav">
-            <a href="/api/home" class="nav-link active">
+            <a href="/api/home" class="nav-link">
                 <i data-lucide="home"></i>
                 <span>Home</span>
             </a>
@@ -23,7 +24,7 @@
                 <i data-lucide="package"></i>
                 <span>My Items</span>
             </a>
-            <a href="/api/community_items" class="nav-link">
+            <a href="/api/community_items" class="nav-link active">
                 <i data-lucide="users"></i>
                 <span>Community Items</span>
             </a>
@@ -45,61 +46,37 @@
         </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main">
+
+        <!-- Top bar: search -->
         <div class="topbar">
-            <input type="search" class="search-input" placeholder="Search items..."
-                   readonly onclick="goToCommunitySearch()">
-            <button class="btn-primary" onclick="openAddItemModal()">
-                <i data-lucide="plus"></i> Add Item
+            <input type="search" class="search-input" placeholder="Search items..." id="search_item">
+            <button class="btn-primary" onclick="loadSearchCommunityItems()">
+                <i data-lucide="search"></i> Search
             </button>
         </div>
 
+        <!-- Category filter chips -->
         <div class="filter-chips">
-            <button class="chip active" onclick="goToCommunity('all')">All Items</button>
-            <button class="chip" onclick="goToCommunity('appliance')">Appliance</button>
-            <button class="chip" onclick="goToCommunity('technology')">Technology</button>
-            <button class="chip" onclick="goToCommunity('sports')">Sports</button>
+            <button class="chip active" onclick="loadAllCommunityItems()">All Items</button>
+            <button class="chip" onclick="loadApplianceCommunityItems()">Appliance</button>
+            <button class="chip" onclick="loadTechnologyCommunityItems()">Technology</button>
+            <button class="chip" onclick="loadSportsCommunityItems()">Sports</button>
         </div>
 
-        <p id="general_message" class="message"></p>
-
+        <!-- Items grid -->
         <section class="section">
-            <h1 class="section-title">All Items</h1>
+            <p id="filtered_by" class="filter-label">Filtered by: All</p>
+            <h1 class="section-title">Community Items</h1>
             <div class="items-grid" id="community_items_grid"></div>
             <p id="table_message" class="message"></p>
-        </section>
-
-        <section class="section">
-            <h1 class="section-title">Latest Items</h1>
-            <div class="items-grid" id="community_latest_items_grid"></div>
-            <p id="community_latest_items_table_message" class="message"></p>
         </section>
 
     </main>
 </div>
 
-<div class="modal-overlay" id="add_item_modal" style="display:none">
-    <div class="modal-card">
-        <h2>Add an Item</h2>
-        <input type="text" id="item_name" placeholder="Enter item name">
-        <select id="category">
-            <option value="">Select a category</option>
-        </select>
-        <input type="text" id="condition" placeholder="Enter item condition">
-        <input type="text" id="description" placeholder="Enter item description">
-        <input type="text" id="note" placeholder="Note to borrower">
-        <input type="number" id="security_deposit" placeholder="Enter security deposit">
-        <input type="file" id="image" accept="image/*">
-        <p id="add_item_message" class="message"></p>
-        <div class="modal-buttons">
-            <button class="btn-primary" onclick="addItem()">
-                <i data-lucide="plus"></i> Add
-            </button>
-            <button class="btn-secondary" onclick="cancelAdd()">Cancel</button>
-        </div>
-    </div>
-</div>
-
+<!-- View Item modal -->
 <div class="modal-overlay" id="view_item_modal" style="display:none">
     <div class="modal-card">
         <h2>Item Details</h2>
@@ -142,8 +119,9 @@
     </div>
 </div>
 
+<!-- Lucide icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>lucide.createIcons();</script>
-<script src="/static/home.js"></script>
+<script src="/static/community_items.js"></script>
 </body>
 </html>

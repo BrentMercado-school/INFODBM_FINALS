@@ -2,29 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Register Page</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/register.css">
 </head>
 <body>
-    <h1>CREATE AN ACCOUNT</h1>
-    <p id="error_message"></p>
+    <div class="card">
 
-    <div class="form">
-        <input type="text" id="username" placeholder="Enter username">
-        <input type="password" id="password" placeholder="Enter password">
-        <button onclick="registerUser()">CREATE</button>
+        <div class="card-header">
+            <h1>Community Resource Sharing</h1>
+            <p>Share what you have. Borrow what you need.</p>
+        </div>
+
+        <div class="form-box" id="register_box">
+            <h2>Create an account</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="registerUser()">Create account</button>
+            <p class="message" id="error_message"></p>
+
+            <p class="switch-text">
+                Already have an account?
+                <a href="#" onclick="showLogin()">Log in</a>
+            </p>
+        </div>
+
+        <div class="form-box active" id="login_box">
+            <h2>Welcome back!</h2>
+            <input type="text" id="username_login" placeholder="Username">
+            <input type="password" id="password_login" placeholder="Password">
+            <button onclick="loginUser()">Log in</button>
+            <p class="message" id="error_message_login"></p>
+
+            <p class="switch-text">
+                Don't have an account?
+                <a href="#" onclick="showRegister()">Sign up</a>
+            </p>
+        </div>
     </div>
 
-    <h1>Login Account</h1>
-    <div class="form">
-        <input type="text" id="username_login" placeholder="Enter username">
-        <input type="password" id="password_login" placeholder="Enter password">
-        <p id="error_message_login"></p>
-        <button onclick="loginUser()">LOGIN</button>
-    </div>
+    <script src="/static/register.js"></script>
 </body>
-<script src="/static/register.js"></script>
 </html>

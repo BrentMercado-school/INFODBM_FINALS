@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>ShareNest</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/api/home" class="nav-link">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="/api/myitems" class="nav-link">
+                <i data-lucide="package"></i>
+                <span>My Items</span>
+            </a>
+            <a href="/api/community_items" class="nav-link">
+                <i data-lucide="users"></i>
+                <span>Community Items</span>
+            </a>
+            <a href="/api/request" class="nav-link active">
+                <i data-lucide="inbox"></i>
+                <span>Requests</span>
+            </a>
+            <a href="/profile" class="nav-link">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" class="nav-link logout">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- Top bar: search -->
+        <div class="topbar">
+            <input type="search" class="search-input" placeholder="Search requests..." id="search_item">
+            <button class="btn-primary" onclick="loadSearchCommunityItems()">
+                <i data-lucide="search"></i> Search
+            </button>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="filter-chips">
+            <button class="chip active" onclick="loadAllBorrowRequest()">All</button>
+            <button class="chip" onclick="loadMyBorrowRequest()">My Borrow Request</button>
+            <button class="chip" onclick="loadOngoingBorrowRequest()">Ongoing</button>
+            <button class="chip" onclick="loadHistoryBorrowRequest()">History</button>
+        </div>
+
+        <p id="general_message" class="message"></p>
+
+        <section class="section">
+            <h1 class="section-title" id="request_header">All Requests</h1>
+            <div class="request-list" id="request_list"></div>
+            <p id="table_message" class="message"></p>
+        </section>
+
+    </main>
+</div>
+
+<!-- Decline modal -->
+<div class="modal-overlay" id="decline_modal" style="display:none">
+    <div class="modal-card">
+        <h2>Decline Request</h2>
+        <input type="hidden" id="borrow_form_id">
+        <label>Reason for declining</label>
+        <input type="text" id="decline_reason" placeholder="Enter decline reason">
+        <div class="modal-buttons">
+            <button class="btn-primary" onclick="declineBorrowRequest()">Submit</button>
+            <button class="btn-secondary" onclick="closeDeclineRequestModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+<script src="/static/request.js"></script>
+</body>
+</html>

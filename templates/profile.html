@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>ShareNest</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/api/home" class="nav-link">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="/api/myitems" class="nav-link">
+                <i data-lucide="package"></i>
+                <span>My Items</span>
+            </a>
+            <a href="/api/community_items" class="nav-link">
+                <i data-lucide="users"></i>
+                <span>Community Items</span>
+            </a>
+            <a href="/api/request" class="nav-link">
+                <i data-lucide="inbox"></i>
+                <span>Requests</span>
+            </a>
+            <a href="/profile" class="nav-link active">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" class="nav-link logout">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <h1 class="section-title">My Profile</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="package"></i></div>
+                <p class="stat-number" id="stat_shared">0</p>
+                <p class="stat-label">Items Shared</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="hand-helping"></i></div>
+                <p class="stat-number" id="stat_lent">0</p>
+                <p class="stat-label">Lent Out</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="shopping-bag"></i></div>
+                <p class="stat-number" id="stat_borrowing">0</p>
+                <p class="stat-label">Borrowing</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="check-circle"></i></div>
+                <p class="stat-number" id="stat_completed">0</p>
+                <p class="stat-label">Completed</p>
+            </div>
+        </div>
+
+        <p id="general_message" class="message"></p>
+
+        <div class="profile-card">
+            <!-- Avatar -->
+            <div class="profile-avatar">
+                <img id="profile_image" alt="Profile" style="display:none;">
+                <div id="profile_placeholder" class="avatar-placeholder">
+                    <i data-lucide="user"></i>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <h2 class="profile-username" id="display_username">Loading...</h2>
+
+            <!-- Details -->
+            <div class="profile-details">
+                <div class="detail-row">
+                    <span class="detail-icon"><i data-lucide="map-pin"></i></span>
+                    <div>
+                        <p class="detail-label">Address</p>
+                        <p class="detail-value" id="display_address">—</p>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-icon"><i data-lucide="phone"></i></span>
+                    <div>
+                        <p class="detail-label">Contact Number</p>
+                        <p class="detail-value" id="display_contact">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit button -->
+            <button class="btn-primary" onclick="openEditProfileModal()">
+                <i data-lucide="pencil"></i> Edit Profile
+            </button>
+        </div>
+
+    </main>
+</div>
+
+<!-- Edit Profile modal -->
+<div class="modal-overlay" id="edit_profile_modal" style="display:none">
+    <div class="modal-card">
+        <h2>Edit Profile</h2>
+
+        <label>Profile Image</label>
+        <input type="file" id="edit_image" accept="image/*">
+
+        <label>Username</label>
+        <input type="text" id="edit_username" placeholder="Enter username">
+
+        <label>Address</label>
+        <input type="text" id="edit_address" placeholder="Enter address">
+
+        <label>Contact Number</label>
+        <input type="text" id="edit_contact" placeholder="Enter contact number">
+
+        <p id="edit_message" class="message"></p>
+
+        <div class="modal-buttons">
+            <button class="btn-primary" onclick="saveProfile()">Save</button>
+            <button class="btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+<script src="/static/profile.js"></script>
+</body>
+</html>

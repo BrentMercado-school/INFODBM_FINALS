@@ -1,0 +1,123 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1f2328;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    padding: 20px;
+}
+
+.card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(27, 94, 32, 0.12);
+    overflow: hidden;
+    animation: rise 0.4s ease-out;
+}
+
+@keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+    background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+    color: #ffffff;
+    padding: 30px 32px 26px;
+    text-align: center;
+}
+.card-header h1 {
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+.card-header p {
+    font-size: 13px;
+    color: #d7f0da;
+    margin-top: 6px;
+}
+
+.form-box {
+    padding: 28px 32px 30px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+}
+.form-box.active {
+    display: flex;
+}
+
+.form-box h2 {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+/* Inputs */
+.form-box input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 14px;
+    border: 1.5px solid #d0d7de;
+    border-radius: 9px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-box input::placeholder {
+    color: #9aa0a6;
+}
+.form-box input:focus {
+    border-color: #43a047;
+    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.15);
+}
+
+/* Button */
+.form-box button {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #2e7d32;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 4px;
+}
+.form-box button:hover {
+    background: #256628;
+}
+
+.message {
+    font-size: 13px;
+    color: #57606a;
+    min-height: 18px;
+    text-align: center;
+}
+
+.switch-text {
+    font-size: 14px;
+    color: #57606a;
+    text-align: center;
+    margin-top: 6px;
+}
+.switch-text a {
+    color: #2e7d32;
+    font-weight: 600;
+    text-decoration: none;
+}
+.switch-text a:hover {
+    text-decoration: underline;
+}
