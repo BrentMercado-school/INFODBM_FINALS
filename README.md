@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [INFODBM_FINALS]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  Database [INFODBM_FINALS]    Script Date: 27/07/2026 6:32:05 pm ******/
 CREATE DATABASE [INFODBM_FINALS]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -82,7 +82,75 @@ ALTER DATABASE [INFODBM_FINALS] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CL
 GO
 USE [INFODBM_FINALS]
 GO
-/****** Object:  Table [dbo].[BorrowForms]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  UserDefinedFunction [dbo].[fnCalculateLatePenalty]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[fnCalculateLatePenalty]
+(
+    @expected_return date,
+    @actual_return date
+)
+RETURNS smallmoney
+AS
+BEGIN
+    DECLARE @days_late int;
+    DECLARE @penalty smallmoney;
+
+    SET @days_late = DATEDIFF(DAY, @expected_return, @actual_return);
+
+    IF @days_late < 0
+        SET @days_late = 0;
+
+    SET @penalty = @days_late * 50; 
+
+    RETURN @penalty;
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnFormatDate]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[fnFormatDate]
+(
+    @date date
+)
+RETURNS varchar(30)
+AS
+BEGIN
+    IF @date IS NULL
+        RETURN NULL
+
+    RETURN FORMAT(@date, 'MMMM d, yyyy')
+END
+
+GO
+/****** Object:  UserDefinedFunction [dbo].[fnGetOnGoingRequestStatus]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[fnGetOnGoingRequestStatus]
+(
+    @return_date date
+)
+RETURNS varchar(9)
+AS
+BEGIN
+    DECLARE @today date = CAST(GETDATE() AS date)
+
+    IF @return_date = @today
+        RETURN 'Due Today'
+
+    IF @return_date > @today
+        RETURN 'On Track'
+
+    RETURN 'Overdue'
+END
+GO
+/****** Object:  Table [dbo].[BorrowForms]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -104,7 +172,7 @@ CREATE TABLE [dbo].[BorrowForms](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Categories]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  Table [dbo].[Categories]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -124,7 +192,7 @@ CREATE TABLE [dbo].[Categories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Items]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  Table [dbo].[Items]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -148,7 +216,7 @@ CREATE TABLE [dbo].[Items](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ReturnForms]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  Table [dbo].[ReturnForms]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -170,7 +238,7 @@ CREATE TABLE [dbo].[ReturnForms](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -222,11 +290,6 @@ REFERENCES [dbo].[Items] ([ItemID])
 GO
 ALTER TABLE [dbo].[BorrowForms] CHECK CONSTRAINT [FK_BorrowForms_Items]
 GO
-ALTER TABLE [dbo].[BorrowForms]  WITH CHECK ADD  CONSTRAINT [FK_BorrowForms_ReturnForms] FOREIGN KEY([BorrowFormID])
-REFERENCES [dbo].[ReturnForms] ([BorrowFormID])
-GO
-ALTER TABLE [dbo].[BorrowForms] CHECK CONSTRAINT [FK_BorrowForms_ReturnForms]
-GO
 ALTER TABLE [dbo].[BorrowForms]  WITH CHECK ADD  CONSTRAINT [FK_BorrowForms_Users] FOREIGN KEY([BorrowerID])
 REFERENCES [dbo].[Users] ([UserID])
 GO
@@ -270,49 +333,726 @@ ALTER TABLE [dbo].[ReturnForms]  WITH CHECK ADD  CONSTRAINT [CK_ReturnForms_Late
 GO
 ALTER TABLE [dbo].[ReturnForms] CHECK CONSTRAINT [CK_ReturnForms_LatePenalty]
 GO
-/****** Object:  StoredProcedure [dbo].[uspAddItem]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspAcceptBorrowRequest]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspAcceptBorrowRequest]
+	@borrow_id int,
+	@item_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	DECLARE @form_status varchar(20), @item_status varchar(20)
+	
+	SELECT
+		@form_status = [Status]
+	FROM BorrowForms
+	WHERE BorrowFormID = @borrow_id
+
+	SELECT
+		@item_status = [Status]
+	FROM Items 
+	WHERE ItemID = @item_id
+
+	IF @item_id IS NULL
+	BEGIN
+		SELECT 'NOT_FOUND' AS Result
+		RETURN
+	END
+
+	IF @form_status <> 'Pending'
+	BEGIN
+		SELECT 'NOT_PENDING' AS Result
+		RETURN
+	END
+
+	IF @item_status <> 'Available'
+	BEGIN
+		SELECT 'ITEM_UNAVAILABLE' AS Result
+		RETURN
+	END
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+		UPDATE BorrowForms
+		SET [Status] = 'Accepted', ApprovedAt = GETDATE()
+		WHERE BorrowFormID = @borrow_id
+
+		UPDATE Items
+		SET [Status] = 'Borrowed', UpdatedAt = GETDATE()
+		WHERE ItemID = @item_id
+
+		UPDATE BorrowForms
+		SET [Status] = 'Declined', DeclineReason = 'Item was borrowed by another user'
+		WHERE ItemID = @item_id AND [Status] = 'Pending' AND BorrowFormID <> @borrow_id
+
+		COMMIT TRANSACTION
+		SELECT 'SUCCESS' AS Result
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		THROW
+	END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspAddItem]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE PROC [dbo].[uspAddItem]
-		@name varchar(100),
-		@category int,
-		@condition varchar(50),
-		@description varchar(255),
-		@note varchar(255),
-		@owner int,
-		@image varchar(255),
-		@securityDeposit smallmoney
-	AS
-	BEGIN
-		SET NOCOUNT ON
+	@name varchar(100),
+	@category int,
+	@condition varchar(50),
+	@description varchar(255),
+	@note varchar(255),
+	@owner int,
+	@image varchar(255),
+	@securityDeposit smallmoney
+AS
+BEGIN
+	SET NOCOUNT ON
 	
-		IF @name IS NULL OR @name = ''
-		BEGIN
-			SELECT 'NO NAME' as RESULT
-			RETURN
-		END
-
-		IF @category IS NULL
-		BEGIN
-			SELECT 'NO CATEGORY' as RESULT
-			RETURN
-		END
-
-		IF @condition IS NULL OR @condition = ''
-		BEGIN
-			SELECT 'NO CONDITION' as RESULT
-			RETURN
-		END
-
-		INSERT Items ([Name], CategoryID, Condition, [Description], Note, OwnerID, ImageURL, SecurityDeposit)
-		VALUES (@name, @category, @condition, @description, @note, @owner, @image, @securityDeposit)
-
-		SELECT SCOPE_IDENTITY() AS ItemID
+	IF @name IS NULL OR @name = ''
+	BEGIN
+		SELECT 'NO NAME' as RESULT
+		RETURN
 	END
+
+	IF @category IS NULL
+	BEGIN
+		SELECT 'NO CATEGORY' as RESULT
+		RETURN
+	END
+
+	IF @condition IS NULL OR @condition = ''
+	BEGIN
+		SELECT 'NO CONDITION' as RESULT
+		RETURN
+	END
+
+	INSERT Items ([Name], CategoryID, Condition, [Description], Note, OwnerID, ImageURL, SecurityDeposit)
+	VALUES (@name, @category, @condition, @description, @note, @owner, @image, @securityDeposit)
+
+	SELECT SCOPE_IDENTITY() AS ItemID
+END
 GO
-/****** Object:  StoredProcedure [dbo].[uspLoadCategories]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspBorrowItem]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspBorrowItem]
+	@borrower_id int,
+	@item_id int,
+	@start date,
+	@return date
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	DECLARE @owner_id int, @status varchar(20), @deposit smallmoney
+
+	SELECT @owner_id = OwnerID, @status = [Status], @deposit = SecurityDeposit
+	FROM Items
+	WHERE ItemID = @item_id
+
+	IF @owner_id IS NULL
+	BEGIN
+		SELECT 'NOT_FOUND' AS Result
+		RETURN
+	END
+
+	IF @owner_id = @borrower_id
+	BEGIN
+		SELECT 'OWN_ITEM' AS Result
+		RETURN
+	END
+
+	IF @status <> 'Available'
+	BEGIN
+		SELECT 'NOT_AVAILABLE' AS Result
+		RETURN
+	END
+
+	IF @start < CAST(GETDATE() AS date)
+	BEGIN
+		SELECT 'START_IN_PAST' AS Result
+		RETURN
+	END
+
+	IF @return < @start
+	BEGIN
+		SELECT 'INVALID_DATES' AS Result
+		RETURN;
+	END
+
+	INSERT BorrowForms (BorrowerID, ItemID, StartDate, ReturnDate, [Status], SecurityDepositSnapShot)
+	VALUES (@borrower_id, @item_id, @start, @return, 'Pending', @deposit)
+
+	SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCancelBorrowRequest]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspCancelBorrowRequest]
+	@id int
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @status varchar(20)
+
+	SELECT @status = [Status]
+	FROM BorrowForms
+	WHERE BorrowFormID = @id 
+
+	IF @status IS NULL
+	BEGIN
+		SELECT 'NOT_FOUND' AS Result
+		RETURN
+	END
+
+	IF @status <> 'Pending'
+	BEGIN
+		SELECT 'NOT_PENDING' AS Result
+		RETURN
+	END
+
+	UPDATE BorrowForms
+	SET [Status] = 'Cancelled'
+	WHERE BorrowFormID = @id
+
+	SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspDeclineBorrowRequest]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspDeclineBorrowRequest]
+	@borrow_id int,
+	@owner_id int,
+	@decline_reason varchar(100) = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @form_status varchar(20)
+
+	SELECT @form_status = bf.[Status]
+	FROM BorrowForms bf
+		JOIN Items i ON bf.ItemID = i.ItemID
+	WHERE bf.BorrowFormID = @borrow_id AND i.OwnerID = @owner_id
+
+	IF @form_status IS NULL
+	BEGIN
+		SELECT 'NOT_FOUND' AS Result
+		RETURN;
+	END
+
+	IF @form_status <> 'Pending'
+	BEGIN
+		SELECT 'NOT_PENDING' AS Result
+		RETURN;
+	END
+
+	UPDATE BorrowForms
+	SET [Status] = 'Declined', DeclineReason = @decline_reason
+	WHERE BorrowFormID = @borrow_id
+
+	SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetAllCommunityItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetAllCommunityItems]
+	@user_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+		
+	SELECT  
+		i.ItemID
+		, i.ImageURL
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.SecurityDeposit
+		, CASE
+			WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+			ELSE i.[Status]
+		END AS [Status]	
+	FROM Items i JOIN  Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON  i.OwnerID = o.UserID LEFT JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable'
+	ORDER BY i.CreatedAt DESC
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetApplianceCommunityItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetApplianceCommunityItems]
+	@user_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT  
+		i.ItemID
+		, i.ImageURL
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.SecurityDeposit
+		, CASE
+            WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+            ELSE i.[Status]
+        END AS [Status]	
+	FROM Items i JOIN  Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON  i.OwnerID = o.UserID LEFT JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable' AND c.[Name] = 'Appliance'
+	ORDER BY i.CreatedAt DESC
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetBorrowRequest]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetBorrowRequest]
+	@user_id int
+AS
+BEGIN
+	SELECT 
+		bf.BorrowFormID
+		, i.ItemID
+		, i.ImageURL
+		, i.Name
+		, c.Name
+		, FORMAT(bf.StartDate, 'MMMM dd, yyyy')
+		, FORMAT(bf.ReturnDate, 'MMMM dd, yyyy')
+		, bf.SecurityDepositSnapShot
+		, b.Username
+	FROM BorrowForms bf JOIN Items i
+	ON bf.ItemID  = i.ItemID JOIN Categories c
+	ON i.CategoryID  = c.CategoryID JOIN Users o
+	ON i.OwnerID = o.UserID JOIN  Users b
+	ON  bf.BorrowerID = b.UserID
+	WHERE o.UserID = @user_id AND bf.[Status] = 'Pending'
+	AND i.Status = 'Available'
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetHistory]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetHistory]
+    @user_id int
+AS
+BEGIN
+    SELECT
+        i.ImageURL,
+        i.Name,
+        c.Name,
+        i.Condition,
+        bf.StartDate,
+        bf.ReturnDate,
+        bf.SecurityDepositSnapShot
+    FROM BorrowForms bf
+    JOIN Items i ON bf.ItemID = i.ItemID
+    JOIN Categories c ON i.CategoryID = c.CategoryID
+    WHERE bf.BorrowerID = @user_id AND bf.Status = 'Returned';
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetItemByID]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetItemByID]
+	@item_id int
+AS
+BEGIN
+	SELECT
+		i.ItemID
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.ImageURL
+		, i.SecurityDeposit
+		, i.[Status]
+		, i.Note
+	FROM Items i JOIN Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON i.OwnerID = o.UserID
+	WHERE ItemID = @item_id
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetItemByIdMyItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetItemByIdMyItems]
+	@itemID int,
+	@ownerID int
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	SELECT
+		ItemID
+		, [Name]
+		, CategoryID
+		, Condition
+		, [Description]
+		, Note
+		, ImageURL
+		, SecurityDeposit
+		, [Status]
+	FROM Items
+	WHERE ItemID = @itemID
+	AND OwnerID = @ownerID
+	AND [Status] <> 'Unavailable'
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetLatestItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC  [dbo].[uspGetLatestItems]
+	@user_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT TOP 4  
+		i.ItemID
+		, i.ImageURL
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.SecurityDeposit
+		, CASE
+			WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+			ELSE i.[Status]
+		END AS [Status]
+	FROM Items i JOIN  Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON i.OwnerID = o.UserID LEFT JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable'
+	ORDER BY i.CreatedAt DESC
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetMyBorrowRequest]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetMyBorrowRequest]
+	@user_id int
+AS
+BEGIN
+	SELECT
+		bf.BorrowFormID
+		, i.ImageURL
+		, i.[Name]
+		, c.[Name]
+		, i.Condition
+		, bf.StartDate
+		, bf.ReturnDate
+		, bf.SecurityDepositSnapShot
+		, bf.[Status]
+	FROM BorrowForms bf JOIN Items i
+	ON bf.ItemID = i.ItemID JOIN Users o
+	ON i.OwnerID = o.UserID JOIN Categories c
+	ON i.CategoryID = c.CategoryID
+	WHERE bf.BorrowerID = @user_id AND bf.[Status] <> 'Cancelled'
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetOnGoingBorrowedItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetOnGoingBorrowedItems]
+	@user_id int
+AS
+BEGIN
+	SELECT
+		i.ImageURL
+		, i.Name
+		, c.Name
+		, i.Condition
+		, bf.ReturnDate
+		, bf.StartDate
+		, bf.SecurityDepositSnapShot
+		, dbo.fnGetOnGoingRequestStatus(bf.ReturnDate) as [Status]
+	FROM BorrowForms bf JOIN Items i
+	ON bf.ItemID = i.ItemID JOIN Categories c
+	ON i.CategoryID = c.CategoryID
+	WHERE bf.BorrowerID = @user_id AND bf.Status = 'Accepted'
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetOwnerItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetOwnerItems]
+    @ownerID int,
+    @filter varchar(20) = 'all'
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    IF @filter = 'available'
+    BEGIN
+        SELECT
+            i.ItemID, i.ImageURL, i.[Name] AS ItemName, c.[Name] AS CategoryName,
+            i.Condition, i.[Description], i.Note, i.SecurityDeposit, i.[Status], i.CreatedAt,
+            bf.BorrowFormID
+        FROM Items i JOIN Categories c 
+		ON i.CategoryID = c.CategoryID LEFT JOIN BorrowForms bf 
+		ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+        WHERE i.OwnerID = @ownerID AND i.[Status] = 'Available'
+        ORDER BY i.[Name]
+        RETURN
+    END
+
+    IF @filter = 'borrowed'
+    BEGIN
+        SELECT
+            i.ItemID, i.ImageURL, i.[Name] AS ItemName, c.[Name] AS CategoryName,
+            i.Condition, i.[Description], i.Note, i.SecurityDeposit, i.[Status], i.CreatedAt,
+            bf.BorrowFormID
+        FROM Items i JOIN Categories c 
+		ON i.CategoryID = c.CategoryID LEFT JOIN BorrowForms bf ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+        WHERE i.OwnerID = @ownerID AND i.[Status] = 'Borrowed'
+        ORDER BY i.[Name]
+        RETURN
+    END
+
+    IF @filter = 'latest'
+    BEGIN
+        SELECT
+            i.ItemID, i.ImageURL, i.[Name] AS ItemName, c.[Name] AS CategoryName,
+            i.Condition, i.[Description], i.Note, i.SecurityDeposit, i.[Status], i.CreatedAt,
+            bf.BorrowFormID
+        FROM Items i JOIN Categories c 
+		ON i.CategoryID = c.CategoryID LEFT JOIN BorrowForms bf 
+		ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+        WHERE i.OwnerID = @ownerID AND i.[Status] <> 'Unavailable'
+        ORDER BY i.CreatedAt DESC
+        RETURN
+    END
+
+    SELECT
+        i.ItemID, i.ImageURL, i.[Name] AS ItemName, c.[Name] AS CategoryName,
+        i.Condition, i.[Description], i.Note, i.SecurityDeposit, i.[Status], i.CreatedAt,
+        bf.BorrowFormID
+    FROM Items i JOIN Categories c 
+	ON i.CategoryID = c.CategoryID LEFT JOIN BorrowForms bf 
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+    WHERE i.OwnerID = @ownerID AND i.[Status] <> 'Unavailable'
+    ORDER BY i.[Name]
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetReturnDetails]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetReturnDetails]
+	@user_id int,
+	@borrow_form int
+AS
+BEGIN
+	SELECT
+		b.ImageURL
+		, b.Username
+		, b.[Address]
+		, i.ImageURL
+		, i.Name
+		, c.Name
+		, i.Condition
+		, bf.StartDate
+		, bf.ReturnDate
+		, bf.SecurityDepositSnapShot
+	FROM BorrowForms bf JOIN Users b
+	ON bf.BorrowerID = b.UserID JOIN Items i
+	ON bf.ItemID = i.ItemID JOIN Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON i.OwnerID = o.UserID
+	WHERE BorrowFormID = @borrow_form AND o.UserID = @user_id
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetSearchItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC  [dbo].[uspGetSearchItems]
+	@search varchar(100),
+	@user_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT  
+		i.ItemID
+		, i.ImageURL
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.SecurityDeposit
+		, CASE
+            WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+            ELSE i.[Status]
+        END AS [Status]		
+	FROM Items i JOIN  Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON i.OwnerID = o.UserID LEFT JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable'
+	AND i.[Name] LIKE '%' + @search + '%'
+	ORDER BY i.CreatedAt DESC
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetSportsCommunityItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetSportsCommunityItems]
+	@user_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT  
+		i.ItemID
+		, i.ImageURL
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.SecurityDeposit
+		, CASE
+            WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+            ELSE i.[Status]
+        END AS [Status]		
+	FROM Items i JOIN  Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON  i.OwnerID = o.UserID LEFT JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable' AND c.[Name] = 'Sport'
+	ORDER BY i.CreatedAt DESC
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetTechnologyCommunityItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetTechnologyCommunityItems]
+	@user_id int
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT  
+		i.ItemID
+		, i.ImageURL
+		, i.[Name] as ItemName
+		, c.[Name] as CategoryName
+		, i.Condition
+		, o.Username
+		, i.SecurityDeposit
+		, CASE
+            WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+            ELSE i.[Status]
+        END AS [Status]		
+	FROM Items i JOIN  Categories c
+	ON i.CategoryID = c.CategoryID JOIN Users o
+	ON  i.OwnerID = o.UserID LEFT JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable' AND c.[Name] = 'Technology'
+	ORDER BY i.CreatedAt DESC
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetUserById]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetUserById]
+	@user_id int
+AS
+BEGIN
+	SELECT 
+		UserID
+		, Username
+		, [Address]
+		, ContactNumber
+		, ImageURL
+		, IsActive
+	FROM Users
+	WHERE UserID = @user_id
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspGetUserStats]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspGetUserStats]
+    @user_id int
+AS
+BEGIN
+    SELECT
+        (SELECT COUNT(*) FROM Items WHERE OwnerID = @user_id) AS ItemsShared,
+
+        (SELECT COUNT(*)
+         FROM BorrowForms bf JOIN Items i 
+		 ON bf.ItemID = i.ItemID
+         WHERE i.OwnerID = @user_id AND bf.Status = 'Accepted') AS ItemsLentOut,
+
+        (SELECT COUNT(*)
+         FROM BorrowForms
+         WHERE BorrowerID = @user_id AND Status = 'Accepted') AS ItemsBorrowing,
+
+        (SELECT COUNT(*)
+         FROM BorrowForms
+         WHERE BorrowerID = @user_id AND Status = 'Returned') AS BorrowsCompleted;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspLoadCategories]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -329,7 +1069,7 @@ BEGIN
 	WHERE IsActive = 1
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspLoadCommunityItems]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspLoadCommunityItems]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -348,14 +1088,18 @@ BEGIN
 		, i.Condition
 		, o.Username
 		, i.SecurityDeposit
-		, i.[Status]
+		,  CASE
+            WHEN i.[Status] = 'Borrowed' THEN 'Borrowed until ' + dbo.fnFormatDate(bf.ReturnDate)
+            ELSE i.[Status]
+        END AS [Status]
 	FROM Items i JOIN  Categories c
 	ON i.CategoryID = c.CategoryID JOIN Users o
-	ON  i.OwnerID = o.UserID
-	WHERE OwnerID <> @user_id
+	ON i.OwnerID = o.UserID LEFT  JOIN BorrowForms bf
+	ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable'
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspLoginUser]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspLoginUser]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -376,7 +1120,7 @@ BEGIN
 	WHERE Username = @username
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspRegisterUser]    Script Date: 12/07/2026 9:53:21 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspRegisterUser]    Script Date: 27/07/2026 6:32:05 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -407,6 +1151,293 @@ BEGIN
 
 	INSERT Users (Username, PasswordHash)
 	VALUES (@username, @password)
+
+	SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturnItem]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspReturnItem]
+    @user_id int,          
+    @borrow_form int,
+    @actual_return date,
+    @damage_fee smallmoney
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    DECLARE @item_id int, @owner_id int, @status varchar(20), 
+	@expected_return date,  @penalty smallmoney
+
+    SELECT
+        @item_id = bf.ItemID,
+        @status = bf.[Status],
+        @expected_return = bf.ReturnDate,
+        @owner_id = i.OwnerID
+    FROM BorrowForms bf
+    JOIN Items i ON bf.ItemID = i.ItemID
+    WHERE bf.BorrowFormID = @borrow_form;
+
+    IF @item_id IS NULL
+    BEGIN
+        SELECT 'NOT_FOUND' AS Result
+        RETURN
+    END
+
+    IF @owner_id <> @user_id
+    BEGIN
+        SELECT 'NOT_OWNER' AS Result
+        RETURN
+    END
+
+    IF @status <> 'Accepted'
+    BEGIN
+        SELECT 'NOT_ACTIVE' AS Result
+        RETURN
+    END
+
+    IF @damage_fee IS NULL OR @damage_fee < 0
+    BEGIN
+        SELECT 'INVALID_DAMAGE' AS Result
+        RETURN
+    END
+
+	SET @penalty = dbo.fnCalculateLatePenalty(@expected_return, @actual_return)
+
+    INSERT INTO ReturnForms (BorrowFormID, ActualReturnDate, DamageFee, LatePenalty)
+    VALUES (@borrow_form, @actual_return, @damage_fee, @penalty)
+
+	UPDATE BorrowForms 
+	SET [Status] = 'Returned' 
+	WHERE BorrowFormID = @borrow_form
+
+    UPDATE Items 
+	SET [Status] = 'Available', UpdatedAt = GETDATE()
+	WHERE ItemID = @item_id
+
+    SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSearchItems]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspSearchItems]
+    @ownerID int,
+    @search varchar(100),
+    @filter varchar(20) = 'all'
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    SELECT
+        i.ItemID, i.ImageURL, i.[Name] AS ItemName, c.[Name] AS CategoryName,
+        i.Condition, i.[Description], i.Note, i.SecurityDeposit, i.[Status], i.CreatedAt,
+        bf.BorrowFormID
+    FROM Items i
+    JOIN Categories c ON i.CategoryID = c.CategoryID
+    LEFT JOIN BorrowForms bf ON i.ItemID = bf.ItemID AND bf.[Status] = 'Accepted'
+    WHERE i.OwnerID = @ownerID
+    AND i.[Status] <> 'Unavailable'
+    AND (
+        @filter = 'all' OR @filter = 'latest'
+        OR (@filter = 'available' AND i.[Status] = 'Available')
+        OR (@filter = 'borrowed' AND i.[Status] = 'Borrowed')
+    )
+    AND (
+        i.[Name] LIKE '%' + @search + '%'
+        OR c.[Name] LIKE '%' + @search + '%'
+        OR i.Condition LIKE '%' + @search + '%'
+        OR ISNULL(i.[Description], '') LIKE '%' + @search + '%'
+        OR ISNULL(i.Note, '') LIKE '%' + @search + '%'
+    )
+    ORDER BY
+        CASE WHEN @filter = 'latest' THEN i.CreatedAt END DESC,
+        CASE WHEN @filter <> 'latest' THEN i.[Name] END ASC
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[uspUpdateItem]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspUpdateItem]
+	@itemID int,
+	@ownerID int,
+	@name varchar(100),
+	@category int,
+	@condition varchar(50),
+	@description varchar(255),
+	@note varchar(255),
+	@image varchar(255),
+	@securityDeposit smallmoney
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	IF NOT EXISTS (
+		SELECT 1
+		FROM Items
+		WHERE ItemID = @itemID
+		AND OwnerID = @ownerID
+		AND [Status] <> 'Unavailable'
+	)
+	BEGIN
+		SELECT 'ITEM NOT FOUND' AS Result
+		RETURN
+	END
+
+	IF EXISTS (
+		SELECT 1
+		FROM Items
+		WHERE ItemID = @itemID
+		AND OwnerID = @ownerID
+		AND [Status] = 'Borrowed'
+	)
+	BEGIN
+		SELECT 'ITEM BORROWED' AS Result
+		RETURN
+	END
+
+	IF @name IS NULL OR LTRIM(RTRIM(@name)) = ''
+	BEGIN
+		SELECT 'NO NAME' AS Result
+		RETURN
+	END
+
+	IF @category IS NULL
+	BEGIN
+		SELECT 'NO CATEGORY' AS Result
+		RETURN
+	END
+
+	IF NOT EXISTS (
+		SELECT 1
+		FROM Categories
+		WHERE CategoryID = @category
+		AND IsActive = 1
+	)
+	BEGIN
+		SELECT 'INVALID CATEGORY' AS Result
+		RETURN
+	END
+
+	IF @condition IS NULL OR LTRIM(RTRIM(@condition)) = ''
+	BEGIN
+		SELECT 'NO CONDITION' AS Result
+		RETURN
+	END
+
+	IF @securityDeposit IS NULL OR @securityDeposit < 0
+	BEGIN
+		SELECT 'INVALID DEPOSIT' AS Result
+		RETURN
+	END
+
+	UPDATE Items
+	SET [Name] = @name
+		, CategoryID = @category
+		, Condition = @condition
+		, [Description] = @description
+		, Note = @note
+		, ImageURL = COALESCE(@image, ImageURL)
+		, SecurityDeposit = @securityDeposit
+		, UpdatedAt = GETDATE()
+	WHERE ItemID = @itemID
+	AND OwnerID = @ownerID
+
+	SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUpdateItemStatus]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspUpdateItemStatus]
+	@itemID int,
+	@ownerID int,
+	@status varchar(20)
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	IF NOT EXISTS (
+		SELECT 1
+		FROM Items
+		WHERE ItemID = @itemID
+		AND OwnerID = @ownerID
+	)
+	BEGIN
+		SELECT 'ITEM NOT FOUND' AS Result
+		RETURN
+	END
+
+	IF EXISTS (
+		SELECT 1
+		FROM Items
+		WHERE ItemID = @itemID
+		AND OwnerID = @ownerID
+		AND [Status] = 'Borrowed'
+	)
+	AND @status = 'Unavailable'
+	BEGIN
+		SELECT 'ITEM BORROWED' AS Result
+		RETURN
+	END
+
+	IF EXISTS (
+		SELECT 1
+		FROM Items
+		WHERE ItemID = @itemID
+		AND OwnerID = @ownerID
+		AND [Status] = 'Unavailable'
+	)
+	BEGIN
+		SELECT 'ALREADY UNAVAILABLE' AS Result
+		RETURN
+	END
+
+	UPDATE Items
+	SET [Status] = @status
+		, UpdatedAt = GETDATE()
+	WHERE ItemID = @itemID
+	AND OwnerID = @ownerID
+
+	SELECT 'SUCCESS' AS Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUpdateUser]    Script Date: 27/07/2026 6:32:05 pm ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[uspUpdateUser]
+	@user_id int,
+	@username varchar(100),
+	@address varchar(150),
+	@contact varchar(20),
+	@image varchar(255)
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+	IF EXISTS (SELECT 1 FROM Users WHERE Username = @username AND UserID <> @user_id)
+	BEGIN
+		SELECT 'USERNAME_TAKEN' AS Result
+		RETURN
+	END
+
+	UPDATE Users
+	SET Username = @username, Address = @address, ContactNumber = @contact, 
+	ImageURL = COALESCE(@image, ImageURL), UpdatedAt = GETDATE()
+	WHERE UserID = @user_id
 
 	SELECT 'SUCCESS' AS Result
 END
