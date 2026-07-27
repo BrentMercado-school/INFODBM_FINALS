@@ -1,4 +1,3 @@
-// ---------- Build one item card ----------
 function buildItemCard(i) {
     let statusHTML;
     if (i.status === "Available") {
@@ -31,8 +30,6 @@ function buildItemCard(i) {
     `;
 }
 
-// ---------- Shared renderer ----------
-// Takes a URL, fetches it, and draws the cards
 async function renderItems(url) {
     const res = await fetch(url);
     const data = await res.json();
@@ -53,25 +50,26 @@ async function renderItems(url) {
     lucide.createIcons();   // render icons on the new cards
 }
 
-// ---------- Category loaders (match your API routes) ----------
 function loadAllCommunityItems() {
     setActiveChip("All Items");
     renderItems("/api/items/community_items/all");
 }
+
 function loadApplianceCommunityItems() {
     setActiveChip("Appliance");
     renderItems("/api/items/community_items/appliance");
 }
+
 function loadTechnologyCommunityItems() {
     setActiveChip("Technology");
     renderItems("/api/items/community_items/technology");
 }
+
 function loadSportsCommunityItems() {
     setActiveChip("Sports");
     renderItems("/api/items/community_items/sports");
 }
 
-// ---------- Search ----------
 function loadSearchCommunityItems() {
     const search = document.getElementById("search_item").value.trim();
     if (!search) {
@@ -84,7 +82,6 @@ function loadSearchCommunityItems() {
     renderItems(`/api/items/community_items/search/${encodeURIComponent(search)}`);
 }
 
-// ---------- Highlight the active chip ----------
 function setActiveChip(label) {
     document.querySelectorAll(".chip").forEach(chip => {
         if (chip.textContent.trim() === label) {
@@ -95,7 +92,6 @@ function setActiveChip(label) {
     });
 }
 
-// ---------- View item modal ----------
 async function openViewItemDetailsModal(id) {
     const res = await fetch(`/api/items/${id}`);
     const data = await res.json();
@@ -137,7 +133,6 @@ function closeViewItemDetailsModal() {
     document.getElementById("view_item_modal").style.display = "none";
 }
 
-// ---------- Borrow flow ----------
 function openBorrowDetailsModal() {
     const status = document.getElementById("item_security_status").value;
 
@@ -186,7 +181,6 @@ async function borrowItem() {
     }
 }
 
-// ---------- Logout ----------
 async function logout() {
     const res = await fetch("/api/logout", { method: "POST" });
     if (res.ok) {
@@ -194,7 +188,6 @@ async function logout() {
     }
 }
 
-// ---------- Search on Enter key ----------
 document.getElementById("search_item").addEventListener("keypress", function(e) {
     if (e.key === "Enter") loadSearchCommunityItems();
 });
@@ -212,7 +205,7 @@ function setActiveChip(label) {
     // update the "Filtered by" label
     document.getElementById("filtered_by").textContent = "Filtered by: " + label;
 }
-// Read the URL query parameters when the page loads
+
 function handleUrlParams() {
     const params = new URLSearchParams(window.location.search);
     const category = params.get("category");   // e.g. "appliance"
@@ -235,5 +228,4 @@ function handleUrlParams() {
     }
 }
 
-// Run this instead of a plain loadAllCommunityItems()
 handleUrlParams();

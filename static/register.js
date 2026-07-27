@@ -41,6 +41,12 @@ async function loginUser()
     const password = document.getElementById("password_login").value;
     const msg = document.getElementById("error_message_login");
 
+    if (!username || !password) {
+        msg.style.color = "#d32f2f";
+        msg.textContent = "Please enter your username and password.";
+        return;
+    }
+
     const res  = await fetch("/api/auth/login", {
        method: "POST",
        headers: {"Content-Type": "application/json"},
@@ -50,12 +56,6 @@ async function loginUser()
    });
 
     const data = await res.json();
-
-    if (!username || !password) {
-        msg.style.color = "#d32f2f";
-        msg.textContent = "Please enter your username and password.";
-        return;
-    }
 
     if (res.ok) {
         document.getElementById("username_login").value = "";
