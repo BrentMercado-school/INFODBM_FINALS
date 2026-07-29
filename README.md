@@ -1446,3 +1446,16 @@ USE [master]
 GO
 ALTER DATABASE [INFODBM_FINALS] SET  READ_WRITE 
 GO
+
+USE [INFODBM_FINALS]
+GO
+INSERT INTO [dbo].[Categories] ([Name]) VALUES
+('Appliance'),
+('Technology'),
+('Sport');
+GO
+
+USE [master]
+GO
+ALTER DATABASE [INFODBM_FINALS] SET  READ_WRITE 
+GO
