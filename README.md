@@ -432,6 +432,11 @@ ALTER TABLE [dbo].[ReturnForms]  WITH CHECK ADD  CONSTRAINT [CK_ReturnForms_Late
 GO
 ALTER TABLE [dbo].[ReturnForms] CHECK CONSTRAINT [CK_ReturnForms_LatePenalty]
 GO
+ALTER TABLE [dbo].[ReturnForms]  WITH CHECK ADD  CONSTRAINT [FK_ReturnForms_BorrowForms] FOREIGN KEY([BorrowFormID])
+REFERENCES [dbo].[BorrowForms] ([BorrowFormID])
+GO
+ALTER TABLE [dbo].[ReturnForms] CHECK CONSTRAINT [FK_ReturnForms_BorrowForms]
+GO
 /****** Object:  StoredProcedure [dbo].[uspAcceptBorrowRequest]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
