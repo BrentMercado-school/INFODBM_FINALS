@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [INFODBM_FINALS]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Database [INFODBM_FINALS]    Script Date: 30/07/2026 10:10:15 pm ******/
 CREATE DATABASE [INFODBM_FINALS]
 GO
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
@@ -74,7 +74,7 @@ ALTER DATABASE [INFODBM_FINALS] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CL
 GO
 USE [INFODBM_FINALS]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnCalculateLatePenalty]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  UserDefinedFunction [dbo].[fnCalculateLatePenalty]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -100,7 +100,7 @@ BEGIN
     RETURN @penalty;
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnFormatDate]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  UserDefinedFunction [dbo].[fnFormatDate]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -119,7 +119,7 @@ BEGIN
 END
 
 GO
-/****** Object:  UserDefinedFunction [dbo].[fnGetOnGoingRequestStatus]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  UserDefinedFunction [dbo].[fnGetOnGoingRequestStatus]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -142,7 +142,7 @@ BEGIN
     RETURN 'Overdue'
 END
 GO
-/****** Object:  Table [dbo].[BorrowForms]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Table [dbo].[BorrowForms]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -164,7 +164,7 @@ CREATE TABLE [dbo].[BorrowForms](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Categories]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Table [dbo].[Categories]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -180,7 +180,7 @@ CREATE TABLE [dbo].[Categories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Items]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Table [dbo].[Items]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -204,7 +204,7 @@ CREATE TABLE [dbo].[Items](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ReturnForms]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Table [dbo].[ReturnForms]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -222,7 +222,7 @@ CREATE TABLE [dbo].[ReturnForms](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -244,70 +244,106 @@ CREATE TABLE [dbo].[Users](
 ) ON [PRIMARY]
 GO
 SET IDENTITY_INSERT [dbo].[BorrowForms] ON 
-
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (1, 2, 4, CAST(N'2026-07-01' AS Date), CAST(N'2026-07-10' AS Date), N'Accepted', CAST(N'2026-07-30T17:45:51.837' AS DateTime), CAST(N'2026-07-30T17:45:51.837' AS DateTime), 300.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (2, 3, 8, CAST(N'2026-07-05' AS Date), CAST(N'2026-07-15' AS Date), N'Accepted', CAST(N'2026-07-30T17:45:51.837' AS DateTime), CAST(N'2026-07-30T17:45:51.837' AS DateTime), 600.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (3, 4, 1, CAST(N'2026-08-01' AS Date), CAST(N'2026-08-05' AS Date), N'Pending', CAST(N'2026-07-30T17:45:51.837' AS DateTime), NULL, 200.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (4, 5, 3, CAST(N'2026-08-02' AS Date), CAST(N'2026-08-08' AS Date), N'Pending', CAST(N'2026-07-30T17:45:51.837' AS DateTime), NULL, 500.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (5, 6, 6, CAST(N'2026-08-03' AS Date), CAST(N'2026-08-06' AS Date), N'Pending', CAST(N'2026-07-30T17:45:51.837' AS DateTime), NULL, 400.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (6, 7, 2, CAST(N'2026-07-20' AS Date), CAST(N'2026-07-25' AS Date), N'Declined', CAST(N'2026-07-30T17:45:51.837' AS DateTime), NULL, 150.0000, N'Item not available on those dates')
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (7, 8, 5, CAST(N'2026-07-18' AS Date), CAST(N'2026-07-22' AS Date), N'Cancelled', CAST(N'2026-07-30T17:45:51.837' AS DateTime), NULL, 250.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (8, 9, 7, CAST(N'2026-06-01' AS Date), CAST(N'2026-06-10' AS Date), N'Returned', CAST(N'2026-07-30T17:45:51.837' AS DateTime), CAST(N'2026-06-01T00:00:00.000' AS DateTime), 100.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (9, 10, 9, CAST(N'2026-06-05' AS Date), CAST(N'2026-06-12' AS Date), N'Returned', CAST(N'2026-07-30T17:45:51.837' AS DateTime), CAST(N'2026-06-05T00:00:00.000' AS DateTime), 50.0000, NULL)
+GO
 INSERT [dbo].[BorrowForms] ([BorrowFormID], [BorrowerID], [ItemID], [StartDate], [ReturnDate], [Status], [CreatedAt], [ApprovedAt], [SecurityDepositSnapShot], [DeclineReason]) VALUES (10, 1, 10, CAST(N'2026-06-15' AS Date), CAST(N'2026-06-20' AS Date), N'Returned', CAST(N'2026-07-30T17:45:51.837' AS DateTime), CAST(N'2026-06-15T00:00:00.000' AS DateTime), 180.0000, NULL)
+GO
 SET IDENTITY_INSERT [dbo].[BorrowForms] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Categories] ON 
-
+GO
 INSERT [dbo].[Categories] ([CategoryID], [Name], [CreatedAt], [IsActive]) VALUES (1, N'Appliance', CAST(N'2026-07-30T17:45:17.773' AS DateTime), 1)
+GO
 INSERT [dbo].[Categories] ([CategoryID], [Name], [CreatedAt], [IsActive]) VALUES (2, N'Technology', CAST(N'2026-07-30T17:45:17.773' AS DateTime), 1)
+GO
 INSERT [dbo].[Categories] ([CategoryID], [Name], [CreatedAt], [IsActive]) VALUES (3, N'Sport', CAST(N'2026-07-30T17:45:17.773' AS DateTime), 1)
+GO
 SET IDENTITY_INSERT [dbo].[Categories] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Items] ON 
-
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (1, N'Electric Drill', 1, N'Like new', N'Cordless power drill', N'Handle with care', 1, NULL, 200.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (2, N'Air Fryer', 1, N'Good', N'5L capacity air fryer', N'Clean after use', 1, NULL, 150.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (3, N'Laptop', 2, N'Slightly used', N'Core i5 laptop', N'No food near it', 2, NULL, 500.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (4, N'Bicycle', 3, N'Good', N'Mountain bike 26 inch', N'Return with full air', 3, NULL, 300.0000, N'Borrowed', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (5, N'Tent', 3, N'Like new', N'4-person camping tent', N'Dry before returning', 3, NULL, 250.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (6, N'Projector', 2, N'Good', N'HD projector', N'Bring your own cable', 4, NULL, 400.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (7, N'Blender', 1, N'Fair', N'Heavy duty blender', N'For fruits only', 5, NULL, 100.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (8, N'Camera', 2, N'Like new', N'DSLR camera with lens', N'Do not drop', 6, NULL, 600.0000, N'Borrowed', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (9, N'Basketball', 3, N'Good', N'Official size basketball', N'Indoor use preferred', 7, NULL, 50.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 INSERT [dbo].[Items] ([ItemID], [Name], [CategoryID], [Condition], [Description], [Note], [OwnerID], [ImageURL], [SecurityDeposit], [Status], [CreatedAt], [UpdatedAt]) VALUES (10, N'Microwave', 1, N'Good', N'20L microwave oven', N'Handle with care', 8, NULL, 180.0000, N'Available', CAST(N'2026-07-30T17:45:51.827' AS DateTime), NULL)
+GO
 SET IDENTITY_INSERT [dbo].[Items] OFF
 GO
 SET IDENTITY_INSERT [dbo].[ReturnForms] ON 
-
+GO
 INSERT [dbo].[ReturnForms] ([ReturnFormID], [BorrowFormID], [ActualReturnDate], [DamageFee], [LatePenalty], [CreatedAt]) VALUES (1, 8, CAST(N'2026-06-10' AS Date), 0.0000, 0.0000, CAST(N'2026-07-30T17:45:51.887' AS DateTime))
+GO
 INSERT [dbo].[ReturnForms] ([ReturnFormID], [BorrowFormID], [ActualReturnDate], [DamageFee], [LatePenalty], [CreatedAt]) VALUES (2, 9, CAST(N'2026-06-14' AS Date), 20.0000, 100.0000, CAST(N'2026-07-30T17:45:51.887' AS DateTime))
+GO
 INSERT [dbo].[ReturnForms] ([ReturnFormID], [BorrowFormID], [ActualReturnDate], [DamageFee], [LatePenalty], [CreatedAt]) VALUES (3, 10, CAST(N'2026-06-20' AS Date), 0.0000, 0.0000, CAST(N'2026-07-30T17:45:51.887' AS DateTime))
+GO
 SET IDENTITY_INSERT [dbo].[ReturnForms] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Users] ON 
-
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (1, N'juan', N'scrypt:32768:8:1$obXsaIdGm90VSAvr$bcd5b19e4aad7322d44019c604e0476319e076e3efdc7191cfe66e9dd606a886fd0761e83c8e4b8b71a4e4a08e59b95798d4e0bb4d877dfcf0e850262c6bbace', N'L16 Blk 32 Quezon City', N'09171234567', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (2, N'ana', N'scrypt:32768:8:1$FJPXKlkfbj2ZUGNZ$3b6374ef7b8fa9dbb8b61a96d51d3939826d1c99037f2eec31d69eb8a0402d81c0be22ccb7b550962a33264a3d008adb1ca9c3e6fe09043c412c1243172c570a', N'22 Rizal St Manila', N'09182345678', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (3, N'pedro', N'scrypt:32768:8:1$u7CpXsrHhWgbfgJ5$81686c6beb01f786c3dc25d18aa067139e0c76b0e7478b67a50fe1040f95ef346e681549971ea6617d4d3893f26b5e78dba4230be34e02150027c6b10f188a4c', N'5 Mabini Ave Cavite', N'09193456789', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (4, N'maria', N'scrypt:32768:8:1$Tu0cJvf3O3A9Njd5$bf244b3994d13ca775ea6e07bfee017ba3a842ef19b90e29a1ec3698bb2c1a3991a4a432db72bef6eecfb7638a68e02ad09739c8aea807e9d8bf901531b22fab', N'88 Luna St Laguna', N'09204567890', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (5, N'jose', N'scrypt:32768:8:1$Ki5wWDZnEE2q9uZo$7e5ba5588e4faf540fb5531fd2f22dde4ca038cc64e1d414810641f7a9d71884d360f54820cbf821d1760927c214bec33bf7063fda2f5f8deb310c0af471936b', N'12 Aguinaldo Batangas', N'09215678901', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (6, N'carla', N'scrypt:32768:8:1$qF0xX1P7xUWPXwMj$c07f0fabd904fe0199b808613442904e05e7a0aa1c02e6a6454e892d22108fab2a8d9555ecfdeb6e1cb2bf3cbc2092663580ba70e129f34128d0f55150614d51', N'9 Bonifacio Bulacan', N'09226789012', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (7, N'mark', N'scrypt:32768:8:1$uCnmz1se55FfqEkD$e871f8711ecc6208571a584bfc048af9e21381acf72b14d633df6a4c741153866a5e16ad03c213d5dfadee11815a11ec79a48d260f2cac7c3dc99e9b9', N'3 Del Pilar Rizal', N'09237890123', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (8, N'grace', N'scrypt:32768:8:1$CSF7EvOkBKGpY0Ss$1831d40bf67d8ebf7051bed09efedacc2ffdc9e8700fdfb0dca4e7fab261a5e5638c28fd5f831c276cdfeb78be1f9393080a6819119389ad47c4e2540d91992e', N'77 Katipunan QC', N'09248901234', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (9, N'leo', N'scrypt:32768:8:1$J7QbxEb121fjWYt2$e3d0132809e4de576f6dd6b71962a9e348c67f2b201f9e7f9874738b1146909f453714a739b4d3e8ac10e8028b95b45c5775b5372411f51397fe885497e71da4', N'41 EDSA Makati', N'09259012345', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 INSERT [dbo].[Users] ([UserID], [Username], [PasswordHash], [Address], [ContactNumber], [ImageURL], [CreatedAt], [UpdatedAt], [IsActive]) VALUES (10, N'nina', N'scrypt:32768:8:1$Czw5LOW3Nk7rRnhw$559887cf73a834ac6e1d66f75d9af6da1e8d3369b72848715eb7024d312114ca913617ced6d066959ae9fae01043bae557d98feaed8cdf3139c45f04d4c315dc', N'18 Ortigas Pasig', N'09260123456', NULL, CAST(N'2026-07-30T17:45:21.233' AS DateTime), NULL, 1)
+GO
 SET IDENTITY_INSERT [dbo].[Users] OFF
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [IX_Categories]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Index [IX_Categories]    Script Date: 30/07/2026 10:10:15 pm ******/
 ALTER TABLE [dbo].[Categories] ADD  CONSTRAINT [IX_Categories] UNIQUE NONCLUSTERED 
 (
 	[Name] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ReturnForms]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Index [IX_ReturnForms]    Script Date: 30/07/2026 10:10:15 pm ******/
 ALTER TABLE [dbo].[ReturnForms] ADD  CONSTRAINT [IX_ReturnForms] UNIQUE NONCLUSTERED 
 (
 	[BorrowFormID] ASC
@@ -315,7 +351,7 @@ ALTER TABLE [dbo].[ReturnForms] ADD  CONSTRAINT [IX_ReturnForms] UNIQUE NONCLUST
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [IX_Users]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  Index [IX_Users]    Script Date: 30/07/2026 10:10:15 pm ******/
 ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [IX_Users] UNIQUE NONCLUSTERED 
 (
 	[Username] ASC
@@ -363,6 +399,11 @@ REFERENCES [dbo].[Users] ([UserID])
 GO
 ALTER TABLE [dbo].[Items] CHECK CONSTRAINT [FK_Items_Users]
 GO
+ALTER TABLE [dbo].[ReturnForms]  WITH CHECK ADD  CONSTRAINT [FK_ReturnForms_BorrowForms] FOREIGN KEY([BorrowFormID])
+REFERENCES [dbo].[BorrowForms] ([BorrowFormID])
+GO
+ALTER TABLE [dbo].[ReturnForms] CHECK CONSTRAINT [FK_ReturnForms_BorrowForms]
+GO
 ALTER TABLE [dbo].[BorrowForms]  WITH CHECK ADD  CONSTRAINT [CK_BorrowForms_SecurityDepositSnapshot] CHECK  (([SecurityDepositSnapShot]>=(0)))
 GO
 ALTER TABLE [dbo].[BorrowForms] CHECK CONSTRAINT [CK_BorrowForms_SecurityDepositSnapshot]
@@ -391,7 +432,7 @@ ALTER TABLE [dbo].[ReturnForms]  WITH CHECK ADD  CONSTRAINT [CK_ReturnForms_Late
 GO
 ALTER TABLE [dbo].[ReturnForms] CHECK CONSTRAINT [CK_ReturnForms_LatePenalty]
 GO
-/****** Object:  StoredProcedure [dbo].[uspAcceptBorrowRequest]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspAcceptBorrowRequest]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -456,7 +497,7 @@ BEGIN
 	END CATCH
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspAddItem]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspAddItem]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -498,7 +539,7 @@ BEGIN
 	SELECT SCOPE_IDENTITY() AS ItemID
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspBorrowItem]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspBorrowItem]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -554,7 +595,7 @@ BEGIN
 	SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspCancelBorrowRequest]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspCancelBorrowRequest]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -590,7 +631,7 @@ BEGIN
 	SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspDeclineBorrowRequest]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspDeclineBorrowRequest]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -629,7 +670,7 @@ BEGIN
 	SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetAllCommunityItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetAllCommunityItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -660,7 +701,7 @@ BEGIN
 	ORDER BY i.CreatedAt DESC
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetApplianceCommunityItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetApplianceCommunityItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -691,7 +732,7 @@ BEGIN
 	ORDER BY i.CreatedAt DESC
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetBorrowRequest]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetBorrowRequest]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -719,7 +760,7 @@ BEGIN
 	AND i.Status = 'Available'
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetHistory]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetHistory]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -742,7 +783,7 @@ BEGIN
     WHERE bf.BorrowerID = @user_id AND bf.Status = 'Returned';
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetItemByID]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetItemByID]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -767,7 +808,7 @@ BEGIN
 	WHERE ItemID = @item_id
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetItemByIdMyItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetItemByIdMyItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -795,7 +836,7 @@ BEGIN
 	AND [Status] <> 'Unavailable'
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetLatestItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetLatestItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -826,7 +867,7 @@ BEGIN
 	ORDER BY i.CreatedAt DESC
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetMyBorrowRequest]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetMyBorrowRequest]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -852,7 +893,7 @@ BEGIN
 	WHERE bf.BorrowerID = @user_id AND bf.[Status] <> 'Cancelled'
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetOnGoingBorrowedItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetOnGoingBorrowedItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -876,7 +917,7 @@ BEGIN
 	WHERE bf.BorrowerID = @user_id AND bf.Status = 'Accepted'
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetOwnerItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetOwnerItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -940,7 +981,7 @@ BEGIN
     ORDER BY i.[Name]
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetReturnDetails]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetReturnDetails]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -969,7 +1010,7 @@ BEGIN
 	WHERE BorrowFormID = @borrow_form AND o.UserID = @user_id
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetSearchItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetSearchItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1002,7 +1043,7 @@ BEGIN
 	ORDER BY i.CreatedAt DESC
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetSportsCommunityItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetSportsCommunityItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1033,7 +1074,7 @@ BEGIN
 	ORDER BY i.CreatedAt DESC
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetTechnologyCommunityItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetTechnologyCommunityItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1064,7 +1105,7 @@ BEGIN
 	ORDER BY i.CreatedAt DESC
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetUserById]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetUserById]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1084,7 +1125,7 @@ BEGIN
 	WHERE UserID = @user_id
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspGetUserStats]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspGetUserStats]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1110,7 +1151,7 @@ BEGIN
          WHERE BorrowerID = @user_id AND Status = 'Returned') AS BorrowsCompleted;
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspLoadCategories]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspLoadCategories]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1127,7 +1168,7 @@ BEGIN
 	WHERE IsActive = 1
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspLoadCommunityItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspLoadCommunityItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1157,7 +1198,7 @@ BEGIN
 	WHERE OwnerID <> @user_id AND i.[Status] <> 'Unavailable'
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspLoginUser]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspLoginUser]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1178,7 +1219,7 @@ BEGIN
 	WHERE Username = @username
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspRegisterUser]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspRegisterUser]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1213,7 +1254,7 @@ BEGIN
 	SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspReturnItem]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspReturnItem]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1279,7 +1320,7 @@ BEGIN
     SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspSearchItems]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspSearchItems]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1319,7 +1360,7 @@ BEGIN
 END
 
 GO
-/****** Object:  StoredProcedure [dbo].[uspUpdateItem]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspUpdateItem]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1412,7 +1453,7 @@ BEGIN
 	SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspUpdateItemStatus]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspUpdateItemStatus]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1470,7 +1511,7 @@ BEGIN
 	SELECT 'SUCCESS' AS Result
 END
 GO
-/****** Object:  StoredProcedure [dbo].[uspUpdateUser]    Script Date: 30/07/2026 9:45:41 pm ******/
+/****** Object:  StoredProcedure [dbo].[uspUpdateUser]    Script Date: 30/07/2026 10:10:15 pm ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
